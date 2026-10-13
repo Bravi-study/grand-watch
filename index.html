@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Grand Watch — оригинальные часы с историей</title>
+  <meta name="description" content="Оригинальные швейцарские часы с пробегом. Проверяем каждую позицию, бронируем на 48 часов, общаемся лично в Telegram.">
+  <meta property="og:title" content="Grand Watch — оригинальные часы с историей">
+  <meta property="og:description" content="Оригинальные швейцарские часы с пробегом. Бронь на 48 часов, связь в Telegram.">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#f5f2ec" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#111312" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="header" id="top">
+    <div class="container header__inner">
+      <a class="logo" href="#top" aria-label="Grand Watch — на главную">
+        <span class="logo__mark" aria-hidden="true"></span>
+        <span class="logo__text">Grand&nbsp;Watch</span>
+      </a>
+      <nav class="nav" aria-label="Разделы">
+        <a href="#catalog">Каталог</a>
+        <a href="#how">Как купить</a>
+        <a href="#faq">Вопросы</a>
+        <a href="#contacts">Контакты</a>
+      </nav>
+      <a class="btn btn--ghost btn--sm header__cta" data-tg="0" href="#contacts">Написать</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero__inner">
+        <div class="hero__text">
+          <p class="eyebrow">Оригинальные часы с историей</p>
+          <h1>Часы, которые<br>проверены лично</h1>
+          <p class="lead">Подбираем оригинальные швейцарские часы с пробегом, проверяем каждую позицию и честно описываем состояние. Понравились часы — бронируем их за вами, пока вы принимаете решение.</p>
+          <div class="hero__actions">
+            <a class="btn btn--primary" href="#catalog">Смотреть каталог</a>
+            <a class="btn btn--ghost" data-tg="0" href="#contacts">Написать в Telegram</a>
+          </div>
+          <ul class="hero__facts">
+            <li><strong>Только оригиналы</strong><span>никаких реплик и «оммажей»</span></li>
+            <li><strong>Бронь <span data-reserve-hours>48</span>&nbsp;часов</strong><span>без предоплаты</span></li>
+            <li><strong>Лично</strong><span>общаетесь с владельцами</span></li>
+          </ul>
+        </div>
+        <div class="hero__visual" id="hero-visual" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <section class="section" id="catalog">
+      <div class="container">
+        <div class="section__head">
+          <div>
+            <p class="eyebrow">Каталог</p>
+            <h2>Сейчас в наличии</h2>
+          </div>
+          <p class="section__count" id="catalog-count"></p>
+        </div>
+
+        <div class="filters" id="filters" role="group" aria-label="Фильтры каталога">
+          <div class="chips" id="filter-collection" role="radiogroup" aria-label="Коллекция"></div>
+          <div class="filters__row">
+            <label class="select">
+              <span class="visually-hidden">Цена</span>
+              <select id="filter-price">
+                <option value="">Любая цена</option>
+                <option value="0-1000000">До 1 млн ₽</option>
+                <option value="1000000-2000000">1–2 млн ₽</option>
+                <option value="2000000-">От 2 млн ₽</option>
+              </select>
+            </label>
+            <label class="select">
+              <span class="visually-hidden">Размер</span>
+              <select id="filter-size">
+                <option value="">Любой размер</option>
+                <option value="0-37">До 37 мм</option>
+                <option value="38-40">38–40 мм</option>
+                <option value="41-">41 мм и больше</option>
+              </select>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" id="filter-papers">
+              <span>С документами</span>
+            </label>
+            <label class="select select--sort">
+              <span class="visually-hidden">Сортировка</span>
+              <select id="filter-sort">
+                <option value="new">Сначала новые</option>
+                <option value="price-asc">Сначала дешевле</option>
+                <option value="price-desc">Сначала дороже</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <div class="grid" id="catalog-grid" aria-live="polite"></div>
+        <div class="empty" id="catalog-empty" hidden>
+          <p>По этим фильтрам ничего нет.</p>
+          <p class="muted">Напишите нам, какую модель ищете. Часто находим под заказ.</p>
+          <button class="btn btn--ghost btn--sm" type="button" id="filters-reset">Сбросить фильтры</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--alt" id="sold-section" hidden>
+      <div class="container">
+        <div class="section__head">
+          <div>
+            <p class="eyebrow">Архив</p>
+            <h2>Уже нашли владельцев</h2>
+          </div>
+        </div>
+        <div class="grid grid--sold" id="sold-grid"></div>
+      </div>
+    </section>
+
+    <section class="section" id="how">
+      <div class="container">
+        <div class="section__head">
+          <div>
+            <p class="eyebrow">Как купить</p>
+            <h2>Четыре спокойных шага</h2>
+          </div>
+        </div>
+        <ol class="steps">
+          <li>
+            <span class="steps__num">01</span>
+            <h3>Выбираете часы</h3>
+            <p>В карточке есть фото, референс, год, комплект и честное описание состояния.</p>
+          </li>
+          <li>
+            <span class="steps__num">02</span>
+            <h3>Пишете в Telegram</h3>
+            <p>Кнопка «Забронировать» откроет чат с готовым сообщением. Ответим на вопросы и пришлём дополнительные фото и видео.</p>
+          </li>
+          <li>
+            <span class="steps__num">03</span>
+            <h3>Держим бронь</h3>
+            <p>Часы снимаются с продажи на <span data-reserve-hours>48</span>&nbsp;часов, пока вы принимаете решение. Без предоплаты.</p>
+          </li>
+          <li>
+            <span class="steps__num">04</span>
+            <h3>Осмотр и покупка</h3>
+            <p>Встречаемся лично, вы смотрите часы вживую, или отправляем с доставкой по договорённости.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="section section--alt" id="trust">
+      <div class="container trust">
+        <div class="trust__text">
+          <p class="eyebrow">Подлинность</p>
+          <h2>Что мы проверяем перед продажей</h2>
+          <p class="muted">Мы продаём только оригинальные часы. Если у вас есть сомнения, будем рады, если вы проверите часы в независимом сервисе до покупки.</p>
+        </div>
+        <ul class="checklist">
+          <li>Соответствие референса, серийного номера и документов</li>
+          <li>Детали корпуса, гравировки, безеля и браслета</li>
+          <li>Механизм: точность хода, подзавод, работа функций</li>
+          <li>Состояние стекла, циферблата и стрелок под увеличением</li>
+          <li>Комплектность: коробка, гарантийная карта, звенья</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section" id="faq">
+      <div class="container container--narrow">
+        <div class="section__head">
+          <div>
+            <p class="eyebrow">Вопросы</p>
+            <h2>Частые вопросы</h2>
+          </div>
+        </div>
+        <div class="faq">
+          <details>
+            <summary>Часы оригинальные?</summary>
+            <p>Да, мы продаём только оригинальные часы. Каждую позицию проверяем перед продажей, а в карточке честно указываем состояние и комплект. Вы можете проверить часы в независимом сервисе до оплаты.</p>
+          </details>
+          <details>
+            <summary>Как работает бронь?</summary>
+            <p>Нажмите «Забронировать» в карточке и отправьте нам сообщение в Telegram. Мы снимем часы с продажи на <span data-reserve-hours>48</span>&nbsp;часов. Предоплата не нужна. Если за это время вы передумаете, просто напишите нам.</p>
+          </details>
+          <details>
+            <summary>Можно посмотреть часы вживую?</summary>
+            <p>Да. Договоримся о встрече в удобном месте<span data-city-suffix></span>. Также можем прислать дополнительные фото и видео в любом ракурсе.</p>
+          </details>
+          <details>
+            <summary>Как оплатить и получить часы?</summary>
+            <p>Оплата при встрече после осмотра. Доставку в другие города обсуждаем индивидуально.</p>
+          </details>
+          <details>
+            <summary>Ищу конкретную модель, которой нет в каталоге</summary>
+            <p>Напишите нам референс или модель и бюджет. Подберём варианты и пришлём, когда найдём подходящие часы.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--contacts" id="contacts">
+      <div class="container">
+        <div class="section__head section__head--center">
+          <div>
+            <p class="eyebrow">Контакты</p>
+            <h2>Пишите напрямую</h2>
+            <p class="muted">Отвечаем сами, без ботов и менеджеров.</p>
+          </div>
+        </div>
+        <div class="contacts" id="contacts-list"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <span class="logo logo--footer"><span class="logo__mark" aria-hidden="true"></span><span class="logo__text">Grand&nbsp;Watch</span></span>
+      <p class="muted small">Названия брендов и моделей используются только для описания товара. Мы не связаны с производителями часов и не являемся их официальными дилерами.</p>
+      <p class="muted small">© <span id="year"></span> Grand Watch</p>
+    </div>
+  </footer>
+
+  <dialog class="modal" id="watch-modal" aria-labelledby="modal-title">
+    <div class="modal__inner" id="modal-content"></div>
+  </dialog>
+
+  <script src="config.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
