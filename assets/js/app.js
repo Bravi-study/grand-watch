@@ -2,7 +2,7 @@
   "use strict";
 
   const CONFIG = Object.assign(
-    { dataUrl: "data/watches.json", contacts: [], reserveHours: 48, city: "" },
+    { dataUrl: "data/watches.json", contacts: [], reserveHours: 48, reserveDeposit: 10000, city: "" },
     window.GW_CONFIG || {}
   );
 
@@ -24,6 +24,8 @@
 
   const priceFmt = new Intl.NumberFormat("ru-RU");
   const formatPrice = (p) => (p > 0 ? `${priceFmt.format(p)} ₽` : "Цена по запросу");
+
+  const depositText = () => formatPrice(CONFIG.reserveDeposit).replace(/ /g, "\u00a0");
 
   const setLabel = (w) => (w.box && w.papers ? "Полный комплект" : w.papers ? "С документами" : w.box ? "С коробкой" : "Без комплекта");
 
@@ -283,9 +285,9 @@
     if (w.status === "available") {
       reserve = `<div class="reserve">
         <div class="reserve__buttons">${CONFIG.contacts
-          .map((c) => `<a class="btn btn--primary" href="${tgLink(c, reserveText(w))}" target="_blank" rel="noopener">${TG_ICON} Забронировать у ${esc(c.name)}</a>`)
+          .map((c) => `<a class="btn btn--primary" href="${tgLink(c, reserveText(w))}" target="_blank" rel="noopener">${TG_ICON} Забронировать у ${esc(c.nameGenitive || c.name)}</a>`)
           .join("")}</div>
-        <p class="reserve__hint">Откроется Telegram с готовым сообщением. Держим часы за вами ${CONFIG.reserveHours}&nbsp;часов, без предоплаты.</p>
+        <p class="reserve__hint">Откроется Telegram с готовым сообщением. Бронь на ${CONFIG.reserveHours}&nbsp;часов после предоплаты ${depositText()}, она засчитывается в стоимость.</p>
       </div>`;
     } else if (w.status === "reserved") {
       const text = `Здравствуйте! Интересуют часы ${w.brand} ${w.model} (${w.id}). Если бронь снимут, напишите мне, пожалуйста.\n${watchUrl(w)}`;
@@ -440,6 +442,7 @@
   }
 
   function applyTexts() {
+    document.querySelectorAll("[data-deposit]").forEach((el) => (el.textContent = depositText()));
     document.querySelectorAll("[data-reserve-hours]").forEach((el) => (el.textContent = CONFIG.reserveHours));
     document.querySelectorAll("[data-city-suffix]").forEach((el) => (el.textContent = CONFIG.city ? ` в г. ${CONFIG.city}` : ""));
     $("#year").textContent = new Date().getFullYear();

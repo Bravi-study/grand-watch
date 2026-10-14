@@ -4,14 +4,17 @@ window.GW_CONFIG = {
   // Позже сюда встанет адрес Google Apps Script (см. README).
   dataUrl: "data/watches.json",
 
-  // Контакты в Telegram: username без @.
+  // Контакты в Telegram: username без @. nameGenitive — для кнопки «Забронировать у Вити».
   contacts: [
-    { name: "Имя 1", username: "username1", role: "Подбор и консультации" },
-    { name: "Имя 2", username: "username2", role: "Встречи и доставка" },
+    { name: "Витя", nameGenitive: "Вити", username: "victor_brazhnikov" },
+    { name: "Петя", nameGenitive: "Пети", username: "Espeshally" },
   ],
 
   // Сколько часов держится бронь (используется в текстах сайта).
   reserveHours: 48,
+
+  // Предоплата за бронь, ₽.
+  reserveDeposit: 10000,
 
   city: "Москва",
 };
