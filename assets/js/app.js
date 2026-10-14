@@ -68,17 +68,34 @@
     }
   }
 
-  // Сначала живой каталог из Google Таблицы, при ошибке — копия из репозитория.
-  async function loadWatches() {
-    if (CONFIG.sheetUrl) {
-      try {
-        return (await fetchJSON(CONFIG.sheetUrl, 8000)).map(normalize);
-      } catch (err) {
-        console.warn("Таблица недоступна, показываю копию каталога", err);
-      }
+  // Каталог показываем сразу: из сохранённой в браузере копии или из data/watches.json,
+  // а живые данные Google Таблицы (отвечает медленно) подставляем, как только придут.
+  const CACHE_KEY = "ws-catalog";
+
+  function readCache() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(CACHE_KEY));
+      return Array.isArray(raw) && raw.length ? raw : null;
+    } catch {
+      return null;
     }
-    return (await fetchJSON(CONFIG.dataUrl, 15000)).map(normalize);
   }
+
+  function writeCache(rows) {
+    try {
+      localStorage.setItem(CACHE_KEY, JSON.stringify(rows));
+    } catch {}
+  }
+
+  function loadSheet() {
+    if (!CONFIG.sheetUrl) return Promise.reject(new Error("sheetUrl не задан"));
+    return fetchJSON(CONFIG.sheetUrl, 12000).then((rows) => {
+      writeCache(rows);
+      return rows;
+    });
+  }
+
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
   // ---------- Telegram ----------
 
@@ -153,7 +170,7 @@
   function photoHTML(w, i = 0, eager = false) {
     const src = w.photos[i];
     if (!src) return dialSVG(w);
-    return `<img src="${esc(src)}" alt="${esc(`${w.brand} ${w.model}`)}" ${eager ? "" : 'loading="lazy"'} decoding="async">`;
+    return `<img src="${esc(src)}" alt="${esc(`${w.brand} ${w.model}`)}" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async" onload="this.classList.add('is-loaded')">`;
   }
 
   // ---------- Rendering ----------
@@ -223,10 +240,8 @@
   function renderCollections() {
     const collections = [...new Set(state.watches.filter((w) => w.status !== "sold").map((w) => w.collection).filter(Boolean))];
     const box = $("#filter-collection");
-    if (collections.length < 2) {
-      box.hidden = true;
-      return;
-    }
+    box.hidden = collections.length < 2;
+    if (box.hidden) return;
     box.innerHTML = ["", ...collections]
       .map((c) => `<button class="chip" type="button" role="radio" data-collection="${esc(c)}" aria-checked="${c === state.filters.collection}">${esc(c || "Все")}</button>`)
       .join("");
@@ -235,8 +250,9 @@
   function renderHero() {
     const pick = state.watches.find((w) => w.featured && w.status === "available") || state.watches.find((w) => w.status === "available");
     const box = $("#hero-visual");
+    box.classList.toggle("is-empty", !pick);
     if (!pick) return;
-    box.innerHTML = `${photoHTML(pick, 0, true)}
+    box.innerHTML = `<span class="loader"></span>${photoHTML(pick, 0, true)}
       <div class="hero__badge">
         <div><small>${esc(pick.brand)} · ${esc(pick.reference || "")}</small><strong>${esc(pick.model)}</strong></div>
         <span class="price">${formatPrice(pick.price)}</span>
@@ -579,20 +595,49 @@
     reveal($("#contacts-list").children);
     bindFilters();
     $("#catalog-grid").innerHTML = '<div class="skeleton"></div>'.repeat(3);
-    try {
-      state.watches = await loadWatches();
-    } catch (err) {
-      console.error("Не удалось загрузить каталог", err);
-      $("#catalog-grid").innerHTML = "";
-      $("#catalog-empty").hidden = false;
-      $("#catalog-empty").firstElementChild.textContent = "Не удалось загрузить каталог. Обновите страницу или напишите нам в Telegram.";
-      return;
+
+    let shown = "";
+    const show = (rows) => {
+      const key = JSON.stringify(rows);
+      if (key === shown) return;
+      const first = !shown;
+      shown = key;
+      state.watches = rows.map(normalize);
+      renderHero();
+      renderCollections();
+      renderCatalog();
+      renderSold();
+      if (first) syncFromHash();
+    };
+
+    const sheet = loadSheet();
+    sheet.catch((err) => console.warn("Таблица недоступна, показываю копию каталога", err));
+
+    const cached = readCache();
+    if (cached) show(cached);
+    else {
+      // Ждём таблицу недолго, затем показываем копию из репозитория.
+      const quick = await Promise.race([sheet.catch(() => null), wait(1200).then(() => null)]);
+      if (quick) show(quick);
+      else {
+        try {
+          show(await fetchJSON(CONFIG.dataUrl, 15000));
+        } catch (err) {
+          console.error("Не удалось загрузить копию каталога", err);
+        }
+      }
     }
-    renderHero();
-    renderCollections();
-    renderCatalog();
-    renderSold();
-    syncFromHash();
+
+    try {
+      show(await sheet);
+    } catch {
+      if (!shown) {
+        $("#catalog-grid").innerHTML = "";
+        $("#hero-visual").classList.add("is-empty");
+        $("#catalog-empty").hidden = false;
+        $("#catalog-empty").firstElementChild.textContent = "Не удалось загрузить каталог. Обновите страницу или напишите нам в Telegram.";
+      }
+    }
   }
 
   init();

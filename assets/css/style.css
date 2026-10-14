@@ -442,7 +442,7 @@ h1 em, h2 em { font-style: italic; color: var(--brass); font-weight: 500; }
   transform: translateX(-120%);
 }
 .hero__visual.is-ready::after { animation: sheen 2.2s 1s cubic-bezier(.4, 0, .2, 1) both; }
-.hero__visual.is-ready img { animation: settle 2.6s cubic-bezier(.2, .7, .2, 1) both; }
+.hero__visual img.is-loaded { animation: settle 2.6s cubic-bezier(.2, .7, .2, 1) both; }
 .hero__badge { z-index: 2; background: rgba(9, 13, 22, .72); border: 1px solid rgba(214, 183, 126, .25); }
 .hero__badge .price { color: var(--brass); }
 
@@ -621,4 +621,20 @@ h1 em, h2 em {
   .checklist { grid-template-columns: 1fr; }
   .steps li, .night .steps li { min-height: 0; }
   .marquee span { gap: 36px; }
+}
+
+/* Пока фото грузится — мерцающая подложка и золотой «безель»-крутилка */
+.hero__visual img, .card__photo img { position: relative; opacity: 0; transition: opacity .7s ease, transform .6s cubic-bezier(.2, .7, .2, 1); }
+.hero__visual img.is-loaded, .card__photo img.is-loaded { opacity: 1; }
+.loader { position: absolute; inset: 0; display: grid; place-items: center; overflow: hidden;
+  background: linear-gradient(110deg, transparent 30%, rgba(214, 183, 126, .08) 50%, transparent 70%) 0 0 / 250% 100%, var(--photo-bg);
+  animation: shimmer 1.8s linear infinite; }
+.loader::before { content: ""; width: 64px; height: 64px; border-radius: 50%;
+  border: 2px solid rgba(214, 183, 126, .18); border-top-color: var(--brass);
+  animation: spin 1s linear infinite; }
+.loader::after { content: ""; position: absolute; width: 6px; height: 6px; border-radius: 50%; background: var(--brass); }
+.hero__visual.is-empty .loader { display: none; }
+@keyframes shimmer { to { background-position: -250% 0, 0 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .hero__visual img, .card__photo img { opacity: 1; }
 }
