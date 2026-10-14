@@ -2,7 +2,7 @@
   "use strict";
 
   const CONFIG = Object.assign(
-    { dataUrl: "data/watches.json", contacts: [], reserveHours: 48, reserveDeposit: 10000, city: "" },
+    { sheetUrl: "", dataUrl: "data/watches.json", contacts: [], reserveHours: 48, reserveDeposit: 10000, city: "" },
     window.GW_CONFIG || {}
   );
 
@@ -55,12 +55,29 @@
     };
   }
 
+  async function fetchJSON(url, timeoutMs) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+    try {
+      const res = await fetch(url, { cache: "no-cache", signal: ctrl.signal });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      return Array.isArray(data) ? data : data.watches || [];
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  // Сначала живой каталог из Google Таблицы, при ошибке — копия из репозитория.
   async function loadWatches() {
-    const res = await fetch(CONFIG.dataUrl, { cache: "no-cache" });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    const list = Array.isArray(data) ? data : data.watches || [];
-    return list.map(normalize);
+    if (CONFIG.sheetUrl) {
+      try {
+        return (await fetchJSON(CONFIG.sheetUrl, 8000)).map(normalize);
+      } catch (err) {
+        console.warn("Таблица недоступна, показываю копию каталога", err);
+      }
+    }
+    return (await fetchJSON(CONFIG.dataUrl, 15000)).map(normalize);
   }
 
   // ---------- Telegram ----------
