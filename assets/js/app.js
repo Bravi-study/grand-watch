@@ -207,6 +207,7 @@
   function renderCatalog() {
     const list = filtered();
     $("#catalog-grid").innerHTML = list.map(cardHTML).join("");
+    reveal($("#catalog-grid").children);
     $("#catalog-empty").hidden = list.length > 0;
     const available = state.watches.filter((w) => w.status === "available").length;
     $("#catalog-count").textContent = available ? `${available} ${plural(available, "позиция", "позиции", "позиций")} в наличии` : "";
@@ -216,6 +217,7 @@
     const sold = state.watches.filter((w) => w.status === "sold");
     $("#sold-section").hidden = sold.length === 0;
     $("#sold-grid").innerHTML = sold.map(cardHTML).join("");
+    reveal($("#sold-grid").children);
   }
 
   function renderCollections() {
@@ -239,6 +241,7 @@
         <div><small>${esc(pick.brand)} · ${esc(pick.reference || "")}</small><strong>${esc(pick.model)}</strong></div>
         <span class="price">${formatPrice(pick.price)}</span>
       </div>`;
+    box.classList.add("is-ready");
     box.removeAttribute("aria-hidden");
     box.setAttribute("role", "button");
     box.setAttribute("tabindex", "0");
@@ -465,11 +468,44 @@
     $("#year").textContent = new Date().getFullYear();
   }
 
+  // ---------- Motion ----------
+
+  // Блоки мягко проявляются при прокрутке. Без поддержки или при «уменьшить движение» всё видно сразу.
+  const motionOK = "IntersectionObserver" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const observer = motionOK
+    ? new IntersectionObserver(
+        (entries) =>
+          entries.forEach((e) => {
+            if (!e.isIntersecting) return;
+            e.target.classList.add("is-in");
+            observer.unobserve(e.target);
+          }),
+        { rootMargin: "0px 0px -8% 0px" }
+      )
+    : null;
+
+  function reveal(elements) {
+    if (!observer) return;
+    [...elements].forEach((el, i) => {
+      el.classList.add("reveal");
+      el.style.transitionDelay = `${(i % 4) * 90}ms`;
+      observer.observe(el);
+    });
+  }
+
+  if (motionOK) document.documentElement.classList.add("motion");
+
   // ---------- Boot ----------
 
   async function init() {
     applyTexts();
+    document.querySelectorAll(".section__head").forEach((el) => reveal([el]));
+    reveal(document.querySelectorAll(".steps li"));
+    reveal(document.querySelectorAll(".checklist li"));
+    reveal(document.querySelectorAll(".faq details"));
+    reveal(document.querySelectorAll(".trust__text"));
     renderContacts();
+    reveal($("#contacts-list").children);
     bindFilters();
     $("#catalog-grid").innerHTML = '<div class="skeleton"></div>'.repeat(3);
     try {
