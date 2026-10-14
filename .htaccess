@@ -1,0 +1,7 @@
+# Страницу браузер каждый раз сверяет с сервером, поэтому новый дизайн виден сразу.
+# CSS и JS можно кэшировать: при каждой выкладке у них меняется ?v=…
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html|json)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>
