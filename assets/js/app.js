@@ -268,7 +268,7 @@
     document.querySelectorAll("[data-tg]").forEach((a) => {
       const c = CONFIG.contacts[Number(a.dataset.tg)];
       if (!c) return;
-      a.href = tgLink(c, "Здравствуйте! Пишу с сайта Grand Watch.");
+      a.href = tgLink(c, "Здравствуйте! Пишу с сайта Watch Supreme.");
       a.target = "_blank";
       a.rel = "noopener";
     });

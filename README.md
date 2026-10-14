@@ -1,4 +1,4 @@
-# Grand Watch
+# Watch Supreme
 
 Витрина магазина оригинальных часов с пробегом. Статический сайт без сборки: HTML, CSS и JS.
 
@@ -16,7 +16,7 @@ python3 -m http.server 8000
 | Что | Где |
 |---|---|
 | Имена и Telegram партнёров, срок брони, город | `config.js` |
-| Часы в каталоге | Google Таблица «Grand Watch — учёт», лист «Товары» (`data/watches.json` — запасная копия) |
+| Часы в каталоге | Google Таблица «Watch Supreme — учёт», лист «Товары» (`data/watches.json` — запасная копия) |
 | Фото часов | `photos/<артикул>/1.jpg, 2.jpg…` |
 | Тексты: первый экран, шаги, FAQ | `index.html` |
 | Цвета и шрифты | начало `assets/css/style.css` |
@@ -37,11 +37,11 @@ python3 -m http.server 8000
 
 ## Публикация
 
-Любой статический хостинг: GitHub Pages, Netlify, Vercel или обычный хостинг с FTP. Свой домен (`grand-watch.ru`) подключается в настройках хостинга.
+Любой статический хостинг: GitHub Pages, Netlify, Vercel или обычный хостинг с FTP. Свой домен (`watch-supreme.ru`) подключается в настройках хостинга.
 
 ## Google Таблица
 
-Таблица [«Grand Watch — учёт»](https://docs.google.com/spreadsheets/d/1-vAnHSq7GuFNFfnYNLmUqNNaWXAt39atc5m-usRYltY/edit):
+Таблица [«Watch Supreme — учёт»](https://docs.google.com/spreadsheets/d/1-vAnHSq7GuFNFfnYNLmUqNNaWXAt39atc5m-usRYltY/edit):
 
 - **Товары** — по строке на часы. Зелёные колонки идут на сайт (если «На сайте» = да), оранжевые видите только вы, серые считаются сами.
 - **Расходы** — общие траты: реклама, упаковка, домен.
