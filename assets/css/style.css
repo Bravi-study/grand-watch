@@ -1,20 +1,23 @@
 /* Watch Supreme — витрина */
 
 :root {
-  --bg: #f5f2ec;
-  --bg-alt: #ece7de;
-  --surface: #fffdf9;
-  --ink: #1b1d1c;
-  --ink-soft: #3b3e3c;
-  --muted: #74706a;
-  --line: #e2dbcf;
-  --accent: #1f4a3a;
-  --accent-ink: #f5f2ec;
-  --brass: #a8875a;
-  --ok: #2f6b4f;
-  --warn: #9a6a1f;
-  --shadow: 0 1px 2px rgba(27, 29, 28, .04), 0 12px 32px -12px rgba(27, 29, 28, .16);
-  --photo-bg: radial-gradient(120% 90% at 50% 30%, #fbf9f5 0%, #ebe5da 100%);
+  /* Тёмная гамма: полночный сапфир и шампанское золото */
+  --bg: #090d16;
+  --bg-alt: rgba(20, 28, 46, .55);
+  --surface: #111827;
+  --surface-glass: rgba(17, 24, 39, .78);
+  --ink: #f2ede4;
+  --ink-soft: #d3d0ca;
+  --muted: #8f97a8;
+  --line: rgba(226, 232, 245, .12);
+  --accent: #d6b77e;
+  --accent-ink: #12100b;
+  --brass: #d6b77e;
+  --sapphire: #2b4c8c;
+  --ok: #7fc8a9;
+  --warn: #e6b66a;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 18px 44px -16px rgba(0, 0, 0, .7);
+  --photo-bg: radial-gradient(120% 90% at 50% 30%, #1d2638 0%, #0d121d 100%);
 
   --radius: 18px;
   --radius-sm: 10px;
@@ -22,27 +25,7 @@
   --sans: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --container: 1200px;
   --gutter: clamp(16px, 4vw, 40px);
-  color-scheme: light;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #111312;
-    --bg-alt: #161917;
-    --surface: #1a1d1b;
-    --ink: #eeeae3;
-    --ink-soft: #cfcac1;
-    --muted: #9a958c;
-    --line: #2a2e2b;
-    --accent: #c9b089;
-    --accent-ink: #141614;
-    --brass: #c9b089;
-    --ok: #7fb898;
-    --warn: #d9a75a;
-    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 16px 40px -16px rgba(0, 0, 0, .6);
-    --photo-bg: radial-gradient(120% 90% at 50% 30%, #252925 0%, #151816 100%);
-    color-scheme: dark;
-  }
+  color-scheme: dark;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -390,34 +373,60 @@ p { margin: 0; }
 
 /* ---------- Night sections, marquee, motion ---------- */
 
-.night {
-  --bg: #0f1513;
-  --bg-alt: #141b18;
-  --surface: #18201d;
-  --ink: #f1ebe0;
-  --ink-soft: #d5cec2;
-  --muted: #9b968c;
-  --line: rgba(241, 235, 224, .14);
-  --brass: #c9a86e;
-  --accent: #c9a86e;
-  --accent-ink: #13110d;
-  --ok: #8cc4a3;
-  --warn: #e0b46a;
-  --photo-bg: radial-gradient(120% 90% at 50% 30%, #222a26 0%, #121815 100%);
-  background: var(--bg);
-  color: var(--ink);
+/* Живой фон: медленный гильош, дрейфующие блики и свет за курсором */
+.backdrop { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; background: var(--bg); }
+.backdrop__glow { position: absolute; border-radius: 50%; filter: blur(80px); will-change: transform; }
+.backdrop__glow--gold {
+  width: 55vmax; height: 55vmax; right: -18vmax; top: -16vmax;
+  background: radial-gradient(circle, rgba(214, 183, 126, .2), transparent 65%);
+  animation: drift-a 38s ease-in-out infinite alternate;
 }
-.header.night { background: rgba(15, 21, 19, .94); border-bottom-color: rgba(201, 168, 110, .18); }
+.backdrop__glow--sapphire {
+  width: 70vmax; height: 70vmax; left: -28vmax; bottom: -30vmax;
+  background: radial-gradient(circle, rgba(43, 76, 140, .5), transparent 65%);
+  animation: drift-b 46s ease-in-out infinite alternate;
+}
+.backdrop__glow--teal {
+  width: 40vmax; height: 40vmax; left: 35vw; top: 40vh;
+  background: radial-gradient(circle, rgba(46, 120, 130, .18), transparent 65%);
+  animation: drift-c 54s ease-in-out infinite alternate;
+}
+.backdrop__rose {
+  position: absolute; width: 140vmax; height: 140vmax; left: 50%; top: 50%;
+  margin: -70vmax 0 0 -70vmax;
+  background: url("../img/guilloche.svg") center / contain no-repeat;
+  opacity: .07;
+  animation: spin 360s linear infinite;
+}
+.backdrop__spot {
+  position: absolute; left: 0; top: 0; width: 640px; height: 640px; margin: -320px 0 0 -320px;
+  border-radius: 50%; opacity: 0; transition: opacity .8s;
+  background: radial-gradient(circle, rgba(214, 183, 126, .09), transparent 60%);
+  will-change: transform;
+}
+.backdrop__spot.is-on { opacity: 1; }
+.backdrop::after {
+  content: ""; position: absolute; inset: 0;
+  background: radial-gradient(120% 90% at 50% 40%, transparent 55%, rgba(4, 6, 11, .55));
+}
+@keyframes drift-a { to { transform: translate(-22vw, 30vh) scale(1.15); } }
+@keyframes drift-b { to { transform: translate(30vw, -18vh) scale(.9); } }
+@keyframes drift-c { from { transform: translate(-30vw, -20vh); } to { transform: translate(20vw, 25vh) scale(1.3); } }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+body { background: transparent; }
+html { background: #090d16; }
+.night { color: var(--ink); }
+.header.night { background: rgba(9, 13, 22, .82); border-bottom-color: rgba(214, 183, 126, .16); }
+.section--alt { background: var(--bg-alt); border-block: 1px solid var(--line); }
+.card, .contact, .toggle, .select select { background-color: var(--surface-glass); }
 
 h1 em, h2 em { font-style: italic; color: var(--brass); font-weight: 500; }
 
 .hero.night {
   position: relative;
   overflow: hidden;
-  background:
-    radial-gradient(60% 70% at 85% 30%, rgba(201, 168, 110, .16), transparent 70%),
-    radial-gradient(50% 60% at 0% 100%, rgba(31, 74, 58, .55), transparent 70%),
-    var(--bg);
+  background: radial-gradient(55% 65% at 80% 35%, rgba(214, 183, 126, .1), transparent 70%);
 }
 .hero.night .lead { color: var(--ink-soft); }
 .hero.night .hero__facts { border-top-color: var(--line); }
@@ -433,9 +442,8 @@ h1 em, h2 em { font-style: italic; color: var(--brass); font-weight: 500; }
 }
 .hero__visual.is-ready::after { animation: sheen 2.2s 1s cubic-bezier(.4, 0, .2, 1) both; }
 .hero__visual.is-ready img { animation: settle 2.6s cubic-bezier(.2, .7, .2, 1) both; }
-.hero__badge { z-index: 2; color: #1b1d1c; }
-.hero__badge small { color: #74706a; }
-.hero__badge { background: rgba(255, 253, 249, .88); }
+.hero__badge { z-index: 2; background: rgba(9, 13, 22, .72); border: 1px solid rgba(214, 183, 126, .25); }
+.hero__badge .price { color: var(--brass); }
 
 .hero__text > * { animation: rise 1s cubic-bezier(.2, .7, .2, 1) both; }
 .hero__text > :nth-child(2) { animation-delay: .1s; }
@@ -448,7 +456,7 @@ h1 em, h2 em { font-style: italic; color: var(--brass); font-weight: 500; }
 @keyframes sheen { to { transform: translateX(120%); } }
 
 .marquee {
-  overflow: hidden; border-block: 1px solid var(--line); background: var(--bg-alt);
+  overflow: hidden; border-block: 1px solid var(--line); background: rgba(9, 13, 22, .5);
   padding: 18px 0; white-space: nowrap;
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
   mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);

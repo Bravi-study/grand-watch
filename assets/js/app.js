@@ -495,6 +495,27 @@
 
   if (motionOK) document.documentElement.classList.add("motion");
 
+  // Мягкий золотой свет на фоне догоняет курсор (только мышь, только если движение разрешено).
+  function cursorGlow() {
+    const spot = $("#backdrop-spot");
+    if (!spot || !motionOK || !matchMedia("(pointer: fine)").matches) return;
+    let x = innerWidth / 2, y = innerHeight / 2, tx = x, ty = y, raf = 0;
+    const step = () => {
+      x += (tx - x) * 0.08;
+      y += (ty - y) * 0.08;
+      spot.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      raf = Math.abs(tx - x) + Math.abs(ty - y) > 0.5 ? requestAnimationFrame(step) : 0;
+    };
+    addEventListener("pointermove", (e) => {
+      tx = e.clientX;
+      ty = e.clientY;
+      spot.classList.add("is-on");
+      if (!raf) raf = requestAnimationFrame(step);
+    }, { passive: true });
+    document.addEventListener("pointerleave", () => spot.classList.remove("is-on"));
+  }
+  cursorGlow();
+
   // ---------- Boot ----------
 
   async function init() {
