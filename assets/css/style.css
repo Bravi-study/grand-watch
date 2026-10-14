@@ -345,7 +345,8 @@ p { margin: 0; }
 /* Responsive */
 @media (max-width: 960px) {
   .hero__inner { grid-template-columns: 1fr; }
-  .hero__visual { aspect-ratio: 5 / 4; max-height: 520px; order: -1; }
+  .hero__media { order: -1; }
+  .hero__visual { aspect-ratio: 5 / 4; max-height: 520px; }
   .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 40px; }
   .trust { grid-template-columns: 1fr; }
   .modal__inner { grid-template-columns: 1fr; }
@@ -483,4 +484,141 @@ h1 em, h2 em { font-style: italic; color: var(--brass); font-weight: 500; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
   html { scroll-behavior: auto; }
+}
+
+/* ---------- Trends: floating glass, kinetic type, tilt, spotlight ---------- */
+
+/* Плавающая стеклянная шапка-«пилюля» */
+.header, .header.night { top: 0; background: transparent; border: 0; backdrop-filter: none; -webkit-backdrop-filter: none; pointer-events: none; }
+.header__inner {
+  pointer-events: auto;
+  max-width: calc(var(--container) - 2 * var(--gutter) + 40px);
+  width: calc(100% - 24px);
+  height: 64px; margin: 12px auto 0; padding: 0 12px 0 20px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .07), rgba(255, 255, 255, .02)), rgba(9, 13, 22, .55);
+  border: 1px solid rgba(255, 255, 255, .1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), 0 18px 40px -20px rgba(0, 0, 0, .8);
+  backdrop-filter: blur(18px) saturate(1.5); -webkit-backdrop-filter: blur(18px) saturate(1.5);
+}
+.header__cta { border-color: rgba(214, 183, 126, .4); }
+html { scroll-padding-top: 100px; }
+
+/* Прогресс прокрутки — тонкая золотая нить сверху */
+.progress { position: fixed; inset: 0 0 auto; height: 2px; z-index: 30; pointer-events: none; transform-origin: 0 50%; transform: scaleX(0);
+  background: linear-gradient(90deg, transparent, var(--brass) 30%, #f6e2b3); }
+@supports (animation-timeline: scroll()) {
+  .progress { animation: progress linear both; animation-timeline: scroll(root); }
+}
+@keyframes progress { to { transform: scaleX(1); } }
+
+/* Крупная редакционная типографика с проявлением строк */
+.hero__title { font-size: clamp(42px, 6vw, 88px); line-height: .98; letter-spacing: -.025em; }
+.hero__title .line { display: block; overflow: hidden; white-space: nowrap; padding-bottom: .06em; }
+.hero__title .line > span { display: inline-block; animation: line-up 1.2s cubic-bezier(.16, 1, .3, 1) both; }
+.hero__title .line:nth-child(2) > span { animation-delay: .12s; }
+.hero__text > .hero__title { animation: none; }
+@keyframes line-up { from { transform: translateY(105%); } }
+
+/* Переливающееся золото в акцентных словах */
+h1 em, h2 em {
+  background: linear-gradient(100deg, #b8925a 0%, #f6e2b3 22%, #d6b77e 40%, #a98450 60%, #f1d9a4 80%, #c9a46a 100%);
+  background-size: 250% 100%;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  animation: gold 9s ease-in-out infinite alternate;
+  padding-right: .06em;
+}
+@keyframes gold { to { background-position: 100% 0; } }
+
+.eyebrow { display: inline-flex; align-items: center; gap: 12px; }
+.eyebrow::before { content: ""; width: 28px; height: 1px; background: currentColor; opacity: .7; }
+.section__head--center .eyebrow::after { content: ""; width: 28px; height: 1px; background: currentColor; opacity: .7; }
+
+/* Hero: 3D-наклон фото с бликом и вращающаяся печать */
+.hero__media { position: relative; perspective: 1200px; }
+.hero__visual { transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform .6s cubic-bezier(.2, .7, .2, 1); transform-style: preserve-3d; }
+.hero__visual .glare {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0; transition: opacity .4s;
+  background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgba(255, 248, 230, .22), transparent 45%);
+}
+.hero__media:hover .glare { opacity: 1; }
+.seal {
+  position: absolute; width: clamp(104px, 11vw, 150px); left: clamp(-56px, -4vw, -24px); top: clamp(-40px, -3vw, -16px); z-index: 3;
+  filter: drop-shadow(0 16px 30px rgba(0, 0, 0, .55));
+}
+.seal__disc { fill: rgba(9, 13, 22, .72); stroke: rgba(214, 183, 126, .5); stroke-width: 1; }
+.seal__text { fill: var(--brass); font: 600 11.5px var(--sans); letter-spacing: .2em; text-transform: uppercase; }
+.seal text { transform-origin: 80px 80px; animation: spin 26s linear infinite; }
+.seal__star { fill: var(--brass); }
+
+/* Бегущая строка: крупно, через одно слово — контуром */
+.marquee { padding: 26px 0; }
+.marquee span { font-size: clamp(28px, 3.4vw, 44px); color: var(--ink); }
+.marquee span:nth-child(even) { color: transparent; -webkit-text-stroke: 1px rgba(214, 183, 126, .75); }
+.marquee span::after { -webkit-text-stroke: 0; }
+
+/* Карточки: прожектор по границе и мягкий наклон */
+.card { position: relative; isolation: isolate; transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(var(--lift, 0)); }
+.card:hover { --lift: -6px; transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(var(--lift)); }
+.card::before {
+  content: ""; position: absolute; inset: -1px; z-index: 3; border-radius: inherit; pointer-events: none; padding: 1px;
+  background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 0%), rgba(246, 226, 179, .85), transparent 70%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  opacity: 0; transition: opacity .4s;
+}
+.card::after {
+  content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: 0; transition: opacity .4s;
+  background: radial-gradient(400px circle at var(--mx, 50%) var(--my, 0%), rgba(214, 183, 126, .1), transparent 60%);
+}
+.card:hover::before, .card:hover::after { opacity: 1; }
+.card__price { color: var(--brass); }
+
+/* Шаги — стеклянные карточки с огромными контурными цифрами */
+.steps { gap: 16px; }
+.steps li, .night .steps li {
+  position: relative; overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 28px 24px 30px; min-height: 280px;
+  background: linear-gradient(160deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .01) 60%), rgba(17, 24, 39, .5);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  transition: border-color .4s, transform .5s cubic-bezier(.2, .7, .2, 1);
+}
+.steps li:hover { border-color: rgba(214, 183, 126, .45); transform: translateY(-4px); }
+.night .steps__num {
+  display: block; font-size: clamp(72px, 8vw, 112px); font-style: normal; font-weight: 500; line-height: .9;
+  color: transparent; -webkit-text-stroke: 1px rgba(214, 183, 126, .6);
+}
+.steps h3 { margin-top: 36px; }
+
+/* Проверка — бенто-плитки */
+.checklist { grid-template-columns: 1fr 1fr; gap: 12px; counter-reset: chk; }
+.checklist li, .checklist li:first-child {
+  counter-increment: chk; border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 56px 20px 20px; background: rgba(17, 24, 39, .55); font-size: 15px; line-height: 1.45;
+  transition: border-color .4s;
+}
+.checklist li:hover { border-color: rgba(214, 183, 126, .45); }
+.checklist li:last-child { grid-column: 1 / -1; }
+.checklist li::before {
+  content: counter(chk, decimal-leading-zero); left: 20px; top: 18px; width: auto; height: auto;
+  border: 0; transform: none; font: italic 500 24px var(--serif); color: var(--brass);
+}
+
+/* Контакты — стекло с золотой обводкой аватара */
+.contact { background: linear-gradient(160deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .01) 60%), rgba(17, 24, 39, .6); }
+.contact__avatar { background: transparent; border: 1px solid rgba(214, 183, 126, .5); color: var(--brass); }
+
+/* Зерно поверх фона — «плёночная» фактура */
+.backdrop::before {
+  content: ""; position: absolute; inset: -50%; z-index: 2; opacity: .06; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@media (max-width: 720px) {
+  .header__inner { height: 56px; padding: 0 8px 0 14px; width: calc(100% - 16px); margin-top: 8px; }
+
+  .seal { left: auto; right: -6px; top: -22px; width: 96px; }
+  .checklist { grid-template-columns: 1fr; }
+  .steps li, .night .steps li { min-height: 0; }
+  .marquee span { gap: 36px; }
 }

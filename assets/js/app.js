@@ -240,7 +240,8 @@
       <div class="hero__badge">
         <div><small>${esc(pick.brand)} · ${esc(pick.reference || "")}</small><strong>${esc(pick.model)}</strong></div>
         <span class="price">${formatPrice(pick.price)}</span>
-      </div>`;
+      </div>
+      <span class="glare"></span>`;
     box.classList.add("is-ready");
     box.removeAttribute("aria-hidden");
     box.setAttribute("role", "button");
@@ -515,6 +516,55 @@
     document.addEventListener("pointerleave", () => spot.classList.remove("is-on"));
   }
   cursorGlow();
+
+  // Наклон фото в hero, прожектор на карточках и «магнитные» кнопки — только для мыши.
+  function pointerFx() {
+    if (!motionOK || !matchMedia("(pointer: fine)").matches) return;
+
+    const media = $(".hero__media");
+    const visual = $("#hero-visual");
+    if (media && visual) {
+      media.addEventListener("pointermove", (e) => {
+        const r = visual.getBoundingClientRect();
+        const px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height;
+        visual.style.setProperty("--ry", `${(px - 0.5) * 10}deg`);
+        visual.style.setProperty("--rx", `${(0.5 - py) * 8}deg`);
+        visual.style.setProperty("--gx", `${px * 100}%`);
+        visual.style.setProperty("--gy", `${py * 100}%`);
+      });
+      media.addEventListener("pointerleave", () => {
+        visual.style.setProperty("--rx", "0deg");
+        visual.style.setProperty("--ry", "0deg");
+      });
+    }
+
+    document.addEventListener("pointermove", (e) => {
+      const card = e.target.closest?.(".card");
+      if (!card) return;
+      const r = card.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height;
+      card.style.setProperty("--mx", `${px * 100}%`);
+      card.style.setProperty("--my", `${py * 100}%`);
+      card.style.setProperty("--ry", `${(px - 0.5) * 6}deg`);
+      card.style.setProperty("--rx", `${(0.5 - py) * 5}deg`);
+    }, { passive: true });
+    document.addEventListener("pointerout", (e) => {
+      const card = e.target.closest?.(".card");
+      if (card && !card.contains(e.relatedTarget)) {
+        card.style.setProperty("--rx", "0deg");
+        card.style.setProperty("--ry", "0deg");
+      }
+    });
+
+    document.querySelectorAll(".btn--primary").forEach((btn) => {
+      btn.addEventListener("pointermove", (e) => {
+        const r = btn.getBoundingClientRect();
+        btn.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * 0.18}px, ${(e.clientY - r.top - r.height / 2) * 0.3}px)`;
+      });
+      btn.addEventListener("pointerleave", () => (btn.style.transform = ""));
+    });
+  }
+  pointerFx();
 
   // ---------- Boot ----------
 

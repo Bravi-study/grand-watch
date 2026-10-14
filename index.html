@@ -23,6 +23,7 @@
     <div class="backdrop__rose"></div>
     <div class="backdrop__spot" id="backdrop-spot"></div>
   </div>
+  <div class="progress" aria-hidden="true"></div>
   <header class="header night" id="top">
     <div class="container header__inner">
       <a class="logo" href="#top" aria-label="Watch Supreme — на главную">
@@ -56,7 +57,7 @@
       <div class="container hero__inner">
         <div class="hero__text">
           <p class="eyebrow">Оригинальные часы с историей</p>
-          <h1>Часы, которые<br>проверены <em>лично</em></h1>
+          <h1 class="hero__title"><span class="line"><span>Часы, которые</span></span> <span class="line"><span>проверены <em>лично</em></span></span></h1>
           <p class="lead">Подбираем оригинальные швейцарские часы с пробегом, проверяем каждую позицию и честно описываем состояние. Понравились часы — бронируем их за вами, пока вы принимаете решение.</p>
           <div class="hero__actions">
             <a class="btn btn--primary" href="#catalog">Смотреть каталог</a>
@@ -68,7 +69,15 @@
             <li><strong>Лично</strong><span>общаетесь с владельцами</span></li>
           </ul>
         </div>
-        <div class="hero__visual" id="hero-visual" aria-hidden="true"></div>
+        <div class="hero__media">
+          <div class="hero__visual" id="hero-visual" aria-hidden="true"></div>
+          <svg class="seal" viewBox="0 0 160 160" aria-hidden="true">
+            <defs><path id="seal-path" d="M80 80 m-62 0 a62 62 0 1 1 124 0 a62 62 0 1 1 -124 0"/></defs>
+            <circle cx="80" cy="80" r="78" class="seal__disc"/>
+            <text class="seal__text"><textPath href="#seal-path" textLength="385">Только оригиналы · Проверено лично · Watch Supreme ·</textPath></text>
+            <path class="seal__star" d="M80 62 L84 76 L98 80 L84 84 L80 98 L76 84 L62 80 L76 76 Z"/>
+          </svg>
+        </div>
       </div>
     </section>
 
