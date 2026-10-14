@@ -2,7 +2,7 @@
   "use strict";
 
   const CONFIG = Object.assign(
-    { sheetUrl: "", dataUrl: "data/watches.json", contacts: [], reserveHours: 48, reserveDeposit: 10000, city: "" },
+    { dataUrl: "data/watches.json", contacts: [], reserveHours: 48, reserveDeposit: 10000, city: "" },
     window.GW_CONFIG || {}
   );
 
@@ -68,34 +68,10 @@
     }
   }
 
-  // Каталог показываем сразу: из сохранённой в браузере копии или из data/watches.json,
-  // а живые данные Google Таблицы (отвечает медленно) подставляем, как только придут.
-  const CACHE_KEY = "ws-catalog";
-
-  function readCache() {
-    try {
-      const raw = JSON.parse(localStorage.getItem(CACHE_KEY));
-      return Array.isArray(raw) && raw.length ? raw : null;
-    } catch {
-      return null;
-    }
+  // Каталог лежит на нашем сервере: GitHub каждые 15 минут забирает его из Google Таблицы.
+  function loadWatches() {
+    return fetchJSON(CONFIG.dataUrl, 15000).then((rows) => rows.map(normalize));
   }
-
-  function writeCache(rows) {
-    try {
-      localStorage.setItem(CACHE_KEY, JSON.stringify(rows));
-    } catch {}
-  }
-
-  function loadSheet() {
-    if (!CONFIG.sheetUrl) return Promise.reject(new Error("sheetUrl не задан"));
-    return fetchJSON(CONFIG.sheetUrl, 12000).then((rows) => {
-      writeCache(rows);
-      return rows;
-    });
-  }
-
-  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
   // ---------- Telegram ----------
 
@@ -596,48 +572,21 @@
     bindFilters();
     $("#catalog-grid").innerHTML = '<div class="skeleton"></div>'.repeat(3);
 
-    let shown = "";
-    const show = (rows) => {
-      const key = JSON.stringify(rows);
-      if (key === shown) return;
-      const first = !shown;
-      shown = key;
-      state.watches = rows.map(normalize);
-      renderHero();
-      renderCollections();
-      renderCatalog();
-      renderSold();
-      if (first) syncFromHash();
-    };
-
-    const sheet = loadSheet();
-    sheet.catch((err) => console.warn("Таблица недоступна, показываю копию каталога", err));
-
-    const cached = readCache();
-    if (cached) show(cached);
-    else {
-      // Ждём таблицу недолго, затем показываем копию из репозитория.
-      const quick = await Promise.race([sheet.catch(() => null), wait(1200).then(() => null)]);
-      if (quick) show(quick);
-      else {
-        try {
-          show(await fetchJSON(CONFIG.dataUrl, 15000));
-        } catch (err) {
-          console.error("Не удалось загрузить копию каталога", err);
-        }
-      }
-    }
-
     try {
-      show(await sheet);
-    } catch {
-      if (!shown) {
-        $("#catalog-grid").innerHTML = "";
-        $("#hero-visual").classList.add("is-empty");
-        $("#catalog-empty").hidden = false;
-        $("#catalog-empty").firstElementChild.textContent = "Не удалось загрузить каталог. Обновите страницу или напишите нам в Telegram.";
-      }
+      state.watches = await loadWatches();
+    } catch (err) {
+      console.error("Не удалось загрузить каталог", err);
+      $("#catalog-grid").innerHTML = "";
+      $("#hero-visual").classList.add("is-empty");
+      $("#catalog-empty").hidden = false;
+      $("#catalog-empty").firstElementChild.textContent = "Не удалось загрузить каталог. Обновите страницу или напишите нам в Telegram.";
+      return;
     }
+    renderHero();
+    renderCollections();
+    renderCatalog();
+    renderSold();
+    syncFromHash();
   }
 
   init();

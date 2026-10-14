@@ -1,4 +1,6 @@
-# Выкладывает сайт на хостинг reg.ru по FTP после каждого push в main.
+# Выкладывает сайт на хостинг reg.ru по FTP после каждого push в main и каждые 15 минут.
+# Перед выкладкой забирает публичные поля каталога из Google Таблицы (Apps Script) в data/watches.json,
+# поэтому посетители читают каталог с нашего сервера и в Google не ходят.
 # Нужны секреты репозитория FTP_SERVER, FTP_USERNAME, FTP_PASSWORD
 # Отдельный FTP-пользователь с домашней папкой www/watch-supreme.ru, поэтому выкладываем в его корень (./).
 name: Deploy to hosting
@@ -7,6 +9,8 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  schedule:
+    - cron: "*/15 * * * *"
 
 concurrency:
   group: deploy
@@ -17,6 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       FTP_SERVER: ${{ secrets.FTP_SERVER }}
+      SHEET_URL: ${{ vars.SHEET_URL || 'https://script.google.com/macros/s/AKfycbz4cdmR7fKkjeHTDkzkVCQ-3iSqTBPWnY649cXi1CwoGtG5wBOxSDHXwr0U9Sj9a59H/exec' }}
     steps:
       - name: Skip until FTP access is configured
         if: env.FTP_SERVER == ''
@@ -24,6 +29,21 @@ jobs:
 
       - uses: actions/checkout@v4
         if: env.FTP_SERVER != ''
+
+      # Если таблица не ответила или вернула не то, выкладываем копию каталога из репозитория.
+      - name: Pull catalog from Google Sheet
+        if: env.FTP_SERVER != ''
+        run: |
+          if curl -fsSL --retry 2 --max-time 60 "$SHEET_URL" -o "$RUNNER_TEMP/catalog.json" && python3 - "$RUNNER_TEMP/catalog.json" <<'PY'
+          import json, sys
+          data = json.load(open(sys.argv[1], encoding="utf-8"))
+          rows = data if isinstance(data, list) else data.get("watches")
+          assert isinstance(rows, list) and all(isinstance(r, dict) and r.get("id") for r in rows), "unexpected catalog shape"
+          with open("data/watches.json", "w", encoding="utf-8") as f:
+              json.dump(rows, f, ensure_ascii=False, indent=2)
+          print(f"Catalog from sheet: {len(rows)} items")
+          PY
+          then :; else echo "::warning::Sheet unavailable, deploying data/watches.json from the repository"; fi
 
       # Новая версия в ссылках на CSS/JS, чтобы браузеры не показывали старый дизайн из кэша.
       - name: Stamp asset versions
