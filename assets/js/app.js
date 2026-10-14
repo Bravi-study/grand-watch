@@ -305,7 +305,7 @@
     if (w.status === "available") {
       reserve = `<div class="reserve">
         <div class="reserve__buttons">${CONFIG.contacts
-          .map((c) => `<a class="btn btn--primary" href="${tgLink(c, reserveText(w))}" target="_blank" rel="noopener">${TG_ICON} Забронировать у ${esc(c.nameGenitive || c.name)}</a>`)
+          .map((c) => `<a class="btn btn--primary" href="${tgLink(c, reserveText(w))}" target="_blank" rel="noopener">${TG_ICON} Бронь у ${esc(c.nameGenitive || c.name)}</a>`)
           .join("")}</div>
         <p class="reserve__hint">Откроется Telegram с готовым сообщением. Бронь на ${CONFIG.reserveHours}&nbsp;часов после предоплаты ${depositText()}, она засчитывается в стоимость.</p>
       </div>`;
