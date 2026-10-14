@@ -1,6 +1,6 @@
 # Выкладывает сайт на хостинг reg.ru по FTP после каждого push в main.
 # Нужны секреты репозитория FTP_SERVER, FTP_USERNAME, FTP_PASSWORD
-# и переменная FTP_DIR (папка сайта на хостинге, например www/watch-supreme.ru/).
+# Отдельный FTP-пользователь с домашней папкой www/watch-supreme.ru, поэтому выкладываем в его корень (./).
 name: Deploy to hosting
 
 on:
@@ -33,7 +33,7 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
-          server-dir: ${{ vars.FTP_DIR }}
+          server-dir: ${{ vars.FTP_DIR || './' }}
           exclude: |
             **/.git*
             **/.git*/**
