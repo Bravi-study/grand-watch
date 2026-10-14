@@ -2,7 +2,7 @@
 window.GW_CONFIG = {
   // Каталог: адрес веб-приложения Apps Script из таблицы «Grand Watch — учёт»
   // (вида https://script.google.com/macros/s/…/exec). Пока пусто, берётся data/watches.json.
-  sheetUrl: "",
+  sheetUrl: "https://script.google.com/macros/s/AKfycbz4cdmR7fKkjeHTDkzkVCQ-3iSqTBPWnY649cXi1CwoGtG5wBOxSDHXwr0U9Sj9a59H/exec",
 
   // Запасная копия каталога, если таблица недоступна.
   dataUrl: "data/watches.json",
