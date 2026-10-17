@@ -65,4 +65,5 @@ jobs:
             apps-script/**
             README.md
             CLAUDE.md
+            AGENTS.md
             CNAME
