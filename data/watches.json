@@ -47,5 +47,25 @@
     "bezelColor": "#0d0e10",
     "photos": [],
     "description": "Демо-позиция для проверки вёрстки, не продаётся."
+  },
+  {
+    "id": "W-003",
+    "status": "available",
+    "brand": "Rolex",
+    "collection": "Submariner",
+    "model": "Submariner 40",
+    "reference": "",
+    "year": "",
+    "diameter": "40",
+    "material": "",
+    "movement": "",
+    "dial": "",
+    "condition": "",
+    "box": "нет",
+    "papers": "",
+    "price": "1 350 000 ₽",
+    "description": "Rolex Submariner, 40 мм. Без коробки.",
+    "photos": "photos/W-003/1.jpg, photos/W-003/2.jpg, photos/W-003/3.jpg, photos/W-003/4.jpg, photos/W-003/5.jpg, photos/W-003/6.jpg",
+    "featured": "нет"
   }
 ]
