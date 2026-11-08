@@ -1,6 +1,6 @@
 # Watch Supreme — инструкции для агентов
 
-Статическая витрина магазина часов: HTML, CSS и JavaScript без сборки. Сайт: https://watch-supreme.ru. Репозиторий: https://github.com/Bravi-study/grand-watch.
+Статическая витрина небольшого магазина подержанных часов (оригиналы, в основном Rolex; 5–10 позиций), интерфейс на русском. HTML, CSS и JavaScript без сборки. Сайт: https://watch-supreme.ru. Репозиторий: https://github.com/Bravi-study/grand-watch.
 
 ## Перед работой
 
@@ -56,13 +56,15 @@
 
 После продажи меняй статус на `продано`, при бронировании — на `забронировано`. Чтобы скрыть позицию полностью, поставь «На сайте» = `нет`. Эти изменения также требуют обновления каталога на хостинге.
 
-<!-- CODEGRAPH_START -->
-## CodeGraph
+## Код и дизайн
 
-In repositories indexed by CodeGraph (a `.codegraph/` directory exists at the repo root), reach for it BEFORE grep/find or reading files when you need to understand or locate code:
-
-- **MCP tool** (when available): `codegraph_explore` answers most code questions in one call — the relevant symbols' verbatim source plus the call paths between them, including dynamic-dispatch hops grep can't follow. Name a file or symbol in the query to read its current line-numbered source. If it's listed but deferred, load it by name via tool search.
-- **Shell** (always works): `codegraph explore "<symbol names or question>"` prints the same output.
-
-If there is no `.codegraph/` directory, skip CodeGraph entirely — indexing is the user's decision.
-<!-- CODEGRAPH_END -->
+- Файлы сайта: `index.html`, `assets/css/style.css`, `assets/js/app.js`, `config.js`. Браузер не обращается к Google.
+- Таблица в локали ru_RU: аргументы формул разделяются `;`.
+- `normalize()` в `app.js` должна по-прежнему принимать строки в виде из таблицы («да», «1 450 000»).
+- Бронирование v1: ссылки в Telegram с заранее заполненным текстом. v2 (в планах): форма, Apps Script и Telegram-бот, бронь на 48 часов.
+- Дизайн всегда тёмный: полночный сапфир и шампанское золото. Токены заданы на `:root` в `style.css`; `.night` отмечает только шапку, hero, шаги и подвал.
+- Фон — фиксированный слой `.backdrop`: плывущие отсветы, медленно вращающийся гильош `assets/img/guilloche.svg`, свечение у курсора из `app.js`. Поэтому секции остаются прозрачными.
+- Трендовый слой в конце `style.css`: плавающая стеклянная шапка-«таблетка», линия прогресса прокрутки, построчное появление заголовка hero, мерцающее золото в `<em>`, вращающаяся печать, наклон и подсветка на hero и карточках, «магнитные» основные кнопки (только для мыши, `pointerFx()` в `app.js`).
+- Логотип — встроенный SVG-герб (щит, циферблат, тиара, лавры) в шапке и подвале. Не используй ничего похожего на корону Rolex.
+- Анимация сдержанная и отключается при prefers-reduced-motion.
+- Любые изменения проверяй скриншотами Playwright на ширине 1440 и 390 px.
